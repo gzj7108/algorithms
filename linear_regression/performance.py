@@ -9,7 +9,7 @@ def average_square(a_r,t_r):
     """average square measure
     input actual result,trained result,column vector
     output average square
-    date:2020/1/17
+    date:2020/1/18
     """
     
     
