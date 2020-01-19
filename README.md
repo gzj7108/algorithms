@@ -1,5 +1,5 @@
-# algorithms
-intelligent-algorithms
+# algoriintelligent-algorithms
+
 数学公式推导＋代码细节实现：
 1.线性回归(Linear Regression)
 2.K邻近学习(K-Nearest Neighbor)
