@@ -43,11 +43,13 @@ def generateTree(d,a,n):
     c_list=list(c_list)
     if len(c_list) == 1:
         node.leaf_node=True
-        #node.category=c_list[0]
+        node.category=c_list[0]
         return node
 
     #if the moment attributeset contains none or the dataset have the same value on attributeset
-    flag=0
+    d_purity=np.array(d)
+    d_purity=np.delete(d_purity,-1,axis=1)
+    flag=len(list(set([tuple(d) for d in d_purity])))
     if len(a) == 0 or flag == 1:
         c_best=c_list[0]
         
@@ -55,7 +57,7 @@ def generateTree(d,a,n):
             if getCategoryNum(d,c_best,-1) < getCategoryNum(d,c,-1):
                 c_best=c
         node.leaf_node=True
-        #node.category=c_best
+        node.category=c_best
         return node
 
     #choose the optimal attribute
@@ -64,6 +66,10 @@ def generateTree(d,a,n):
     for i in a:
         if calculateInfGain(d,a_optimal) < calculateInfGain(d,i):
             a_optimal=i
+    node.attributes.append(a_optimal)
+    print("a_optimal:",a_optimal)
+    print("d",d)
+    print("information gain:",calculateInfGain(d,a_optimal))
     #iteration 
     a_list=getCategory(d,a_optimal)
     a.remove(a_optimal)
@@ -75,7 +81,7 @@ def generateTree(d,a,n):
                 if getCategoryNum(d,c_best,-1) < getCategoryNum(d,c,-1):
                      c_best=c
             node.leaf_node=True
-            #node.category=c_best
+            node.category=c_best
             return node
         else:
             node.next_node.append(generateTree(d_son,a,node))
@@ -176,7 +182,7 @@ def getCategoryNum(d,value,index):
 
     return num
 
-    
+   
 #test
 dataSet=[[0, 0, 0, 0, '1'],
         [0, 0, 0, 1, '1'],
