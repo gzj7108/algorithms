@@ -18,6 +18,7 @@ class Node():
         #use a list to store the connection for the convenience of extension 
         self.last_node=[]
         self.next_node=[]
+        self.value=[]
         #mark the right node category to judge the root and the leaf
         self.root_node=False
         self.leaf_node=False
@@ -25,7 +26,7 @@ class Node():
         self.attributes=[]
         #the final category
         self.category=0
-
+        
         
 
 def generateTree(d,a,n):
@@ -43,6 +44,7 @@ def generateTree(d,a,n):
     c_list=list(c_list)
     if len(c_list) == 1:
         node.leaf_node=True
+        leaf_node.append(node)
         node.category=c_list[0]
         return node
 
@@ -57,6 +59,7 @@ def generateTree(d,a,n):
             if getCategoryNum(d,c_best,-1) < getCategoryNum(d,c,-1):
                 c_best=c
         node.leaf_node=True
+        leaf_node.append(node)
         node.category=c_best
         return node
 
@@ -67,10 +70,7 @@ def generateTree(d,a,n):
         if calculateInfGain(d,a_optimal) < calculateInfGain(d,i):
             a_optimal=i
     node.attributes.append(a_optimal)
-    print("a_optimal:",a_optimal)
-    print("d",d)
-    print("information gain:",calculateInfGain(d,a_optimal))
-    #iteration 
+   
     a_list=getCategory(d,a_optimal)
     a.remove(a_optimal)
     for i in a_list:
@@ -81,10 +81,12 @@ def generateTree(d,a,n):
                 if getCategoryNum(d,c_best,-1) < getCategoryNum(d,c,-1):
                      c_best=c
             node.leaf_node=True
+            leaf_node.append(node)
             node.category=c_best
             return node
         else:
             node.next_node.append(generateTree(d_son,a,node))
+            node.value.append(i)
     
 
     return node
@@ -182,30 +184,60 @@ def getCategoryNum(d,value,index):
 
     return num
 
-   
-#test
-dataSet=[[0, 0, 0, 0, '1'],
-        [0, 0, 0, 1, '1'],
-        [0, 1, 0, 1, '0'],
-        [0, 1, 1, 0, '0'],
-        [0, 0, 0, 0, '1'],
-        [1, 0, 0, 0, '1'],
-        [1, 0, 0, 1, '1'],
-        [1, 1, 1, 1, '0'],
-        [1, 0, 1, 2, '0'],
-        [1, 0, 1, 2, '0'],
-        [2, 0, 1, 2, '0'],
-        [2, 0, 1, 1, '0'],
-        [2, 1, 0, 1, '0'],
-        [2, 1, 0, 2, '0'],
-        [2, 0, 0, 0, '1']]
 
-#print(getCategory(dataSet))
-#print(calculateInfEnt(dataSet))
-#for i in range(4):
- #   print("the ",i,"information gain is:",calculateInfGain(dataSet,i))
-n=Node()
-n.root_node=True
-a=[0,1,2,3]
-n.next_node.append(generateTree(dataSet,a,n))
-print(n.next_node)
+def decisionTreeID3(n_model,d_judge):
+    """use the model we have trained
+    input:
+    n_model:the model that has been trained as a root node
+    d_judge:the data to be judged
+
+    output:the category of the d_judge
+    
+    """
+    
+    if n_model.root_node == True:
+        n_model=n_model.next_node[0]
+    while n_model.leaf_node == False:
+        attribute=n_model.attributes[0]#the chosen attribute
+        n_model=n_model.next_node[n_model.value.index(d_judge[attribute])]
+
+    return n_model.category
+
+def getRootNode(dataSet):
+    """
+    generate the tree and return  a root node to traversal the data
+    """
+    n=Node()
+    n.root_node=True
+    #set the number of the attributes
+    a=[0,1,2,3]
+    n.next_node.append(generateTree(dataSet,a,n))
+
+    return n
+
+#test
+dataSet=[[0, 0, 0, 0, 'no'],
+            [0, 0, 0, 1, 'no'],
+            [0, 1, 0, 1, 'yes'],
+            [0, 1, 1, 0, 'yes'],
+            [2, 0, 1, 2, 'yes'],
+            [2, 0, 1, 1, 'yes'],
+            [2, 1, 0, 1, 'yes'],
+            [2, 1, 0, 2, 'yes'],
+            [2, 0, 0, 0, 'no']]
+testSet=[[0, 0, 0, 0, 'no'],
+            [1, 0, 0, 0, 'no'],
+            [1, 0, 0, 1, 'no'],
+            [1, 1, 1, 1, 'yes'],
+            [1, 0, 1, 2, 'yes'],
+            [1, 0, 1, 2, 'yes']]
+
+
+#test
+leaf_node=[]
+root_node=getRootNode(dataSet)
+num=0
+for i in range(len(testSet)):
+    if decisionTreeID3(root_node,testSet[i]) == testSet[i][-1]:
+        num+=1
+print("accuracy:",100*num/len(testSet),"%")
