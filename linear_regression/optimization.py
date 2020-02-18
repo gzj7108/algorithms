@@ -3,7 +3,7 @@ optimization methods
 
 """
 
-import numpy
+import numpy as np
 
 def gradient_descent(o_x,g,l_r):
     """gradient descent optimization
@@ -12,4 +12,4 @@ def gradient_descent(o_x,g,l_r):
     date:2020/1/17
     """
     
-    return o_x-np.dot(g,l_r)
+    return o_x-g*l_r
