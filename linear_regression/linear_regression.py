@@ -3,25 +3,26 @@ linear  regression model f(x)=wx+b
 
 """
 
-
+from performance import*
 from optimization import gradient_descent
 import numpy as np
+import matplotlib.pyplot as plt
 
-def linear_regression(w,x,y):
+def linearRegression(w,x,y):
     """linear regression model
     input training data
     w:weight and bias
     x:variable
     y:actual result
     output expected w
-    date:2020/2/18
+    date:2020/1/18
     """ 
 
     #set parameters
-    learning_rate=0.001
-    convergence_criterion=0.000001
-    iteration_times=40000
-    acceptale_error=0.0001
+    learning_rate=0.0000001
+    iteration_times=1000
+
+
 
     #iteration
     for i in range(iteration_times):
@@ -30,19 +31,9 @@ def linear_regression(w,x,y):
         gradient=2*np.dot(x.transpose(),np.dot(x,w)-y)
         #gradient iteration
         w=gradient_descent(w,gradient,learning_rate)
-        #gradient?0
-        if abs(np.dot(gradient.transpose(),gradient)) < acceptale_error:
-            print(" gradient convergence!")
-            break
+        #calculate the cost
+        print("R2 cost:",R2(y,np.dot(x,w)))
+
 
     return w
 
-#test
-w=[0,0]
-w=np.array(w)
-x=[[1,1],[2,1]]
-x=np.array(x)
-#print(x.shape)
-y=[1,2]
-y=np.array(y).transpose()
-print(linear_regression(w,x,y))
